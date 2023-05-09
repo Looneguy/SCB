@@ -1,11 +1,17 @@
+using Microsoft.EntityFrameworkCore;
+using SCB_API.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<Database>();
+
+var connectionString = builder.Configuration.GetConnectionString("default");
+
+builder.Services.AddDbContext<SCBDbContext>(options => options.UseSqlServer(connectionString));
+// TODO Add SeriLog as logger if i have time
 
 var app = builder.Build();
 
@@ -17,9 +23,24 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var database = scope.ServiceProvider.GetRequiredService<Database>();
+
+    if (app.Environment.IsProduction())
+    {
+        await database.CreateIfNotExist();
+    }
+
+    if (app.Environment.IsDevelopment())
+    {
+        // TODO Fetch from API on startup, Maybe in a new method in database service?
+        await database.RecreateAndSeedAsync();
+    }
+}
 
 app.Run();
