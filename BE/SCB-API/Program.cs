@@ -15,7 +15,6 @@ builder.Services.AddDbContext<SCBDbContext>(options => options.UseSqlServer(conn
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
