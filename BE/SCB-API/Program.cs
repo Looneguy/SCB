@@ -7,6 +7,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<Database>();
+builder.Services.AddScoped<SCBHandler>();
+builder.Services.AddHttpClient("SCB", httpClient =>
+{
+    httpClient.BaseAddress = new Uri("https://api.scb.se/OV0104/v1/doris/en/ssd/");
+});
 
 var connectionString = builder.Configuration.GetConnectionString("default");
 
@@ -29,6 +34,7 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var database = scope.ServiceProvider.GetRequiredService<Database>();
+    var scbHandler = scope.ServiceProvider.GetRequiredService<SCBHandler>();
 
     if (app.Environment.IsProduction())
     {
@@ -38,7 +44,10 @@ using (var scope = app.Services.CreateScope())
     if (app.Environment.IsDevelopment())
     {
         // TODO Fetch from API on startup, Maybe in a new method in database service?
-        await database.RecreateAndSeedAsync();
+        //await database.RecreateAndSeedAsync();
+        await database.Recreate();
+        var scbContent = await scbHandler.GetSCBRegionAndGenderTemplate();
+        await database.FillDbWithRegionAndGenderTemplateAsync(scbContent);
     }
 }
 

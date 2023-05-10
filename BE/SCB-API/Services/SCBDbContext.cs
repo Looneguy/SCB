@@ -9,7 +9,7 @@ namespace SCB_API.Services
         {
 
         }
-        public DbSet<SCBTable> ScbTables { get; set; }
+        public DbSet<SCBModel> ScbModels { get; set; }
         public DbSet<BornStatistic> BornStatistics { get; set; }
     }
 }
