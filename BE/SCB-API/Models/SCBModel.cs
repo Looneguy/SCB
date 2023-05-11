@@ -11,6 +11,6 @@ namespace SCB_API.Models
         public string? RegionCode { get; set; }
         public string? RegionName { get; set; }
         public string? GenderCode { get; set; }
-        public string? Sex { get; set; }
+        public string? Gender { get; set; }
     }
 }

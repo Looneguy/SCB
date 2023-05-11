@@ -28,7 +28,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
-
 app.MapControllers();
 
 using (var scope = app.Services.CreateScope())
@@ -43,11 +42,24 @@ using (var scope = app.Services.CreateScope())
 
     if (app.Environment.IsDevelopment())
     {
-        // TODO Fetch from API on startup, Maybe in a new method in database service?
         //await database.RecreateAndSeedAsync();
         await database.Recreate();
+
         var scbContent = await scbHandler.GetSCBRegionAndGenderTemplate();
         await database.FillDbWithRegionAndGenderTemplateAsync(scbContent);
+
+        string[] filterYears = { "2016","2017","2018","2019","2020"};
+        var bornStatistics = await scbHandler.GetBornStatisticsFromSCB(filterYears);
+
+        if (bornStatistics.Success && bornStatistics.Value != null)
+        {
+            await database.FillDbWithBornStatistics(bornStatistics.Value);
+        }
+        else
+        {
+            // TODO - Log error, retry
+            Console.WriteLine(bornStatistics.ErrorMessage);
+        }
     }
 }
 

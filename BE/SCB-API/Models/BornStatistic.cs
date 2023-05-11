@@ -9,7 +9,7 @@ namespace SCB_API.Models
         public string RegionCode { get; set; }
         public string RegionName { get; set; }
         public string Year { get; set; }
-        public string Sex { get; set; }
-        public int Amount { get; set; }
+        public string Gender { get; set; }
+        public string Amount { get; set; }
     }
 }

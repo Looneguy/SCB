@@ -1,13 +1,11 @@
 ﻿using SCB_API.Models;
-using System.Runtime.CompilerServices;
+using SCB_API.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace SCB_API.Services
 {
     public class Database
     {
-        private static readonly string Region = "Region";
-        private static readonly string Gender = "Kon";
-
         private readonly SCBDbContext _ctx;
 
         public Database(SCBDbContext ctx)
@@ -19,7 +17,7 @@ namespace SCB_API.Services
         {
             foreach (var section in template.Variables)
             {
-                if (section.Code == Region)
+                if (section.Code == SCBCodes.Region)
                 {
                     string[] regionCodes = section.Values;
                     string[] regionNames = section.ValueTexts;
@@ -33,7 +31,7 @@ namespace SCB_API.Services
                     _ctx.ScbModels.AddRange(regions);
                     _ctx.SaveChanges();
                 }
-                if (section.Code == Gender)
+                if (section.Code == SCBCodes.Gender)
                 {
                     string[] codes = section.Values;
                     string[] genderNames = section.ValueTexts;
@@ -42,7 +40,7 @@ namespace SCB_API.Services
                     var codeAndGender = codes.Zip(genderNames, (c, s) => new { Code = c, Name = s });
                     foreach(var gender in codeAndGender)
                     {
-                        genders.Add(new SCBModel() { GenderCode = gender.Code, Sex = gender.Name, FetchedAt = DateTime.UtcNow });
+                        genders.Add(new SCBModel() { GenderCode = gender.Code, Gender = gender.Name, FetchedAt = DateTime.UtcNow });
                     }
                     _ctx.ScbModels.AddRange(genders);
                     _ctx.SaveChanges();
@@ -58,8 +56,8 @@ namespace SCB_API.Services
                 RegionCode = "00",
                 RegionName = "Riket",
                 Year = "2016",
-                Sex = "Women",
-                Amount = 10000
+                Gender = "Women",
+                Amount = "10000"
             };
 
             var scbModel = new SCBModel()
@@ -104,6 +102,36 @@ namespace SCB_API.Services
             {
                 await SeedAsync();
             }
+        }
+
+        public async Task FillDbWithBornStatistics(BornStatisticDto values)
+        {
+            var newListOfBornStatistics = new List<BornStatistic>();
+            foreach(var value in values.Data)
+            {
+                var regionCode = value.Key[0];
+                var genderCode = value.Key[1];
+                var year = value.Key[2];
+                var amount = value.Values[0];
+
+                var regionTemplate = await _ctx.ScbModels.FirstOrDefaultAsync(m => m.RegionCode == regionCode);
+                var genderTemplate = await _ctx.ScbModels.FirstOrDefaultAsync(m => m.GenderCode == genderCode);
+
+                var newStatisticData = new BornStatistic()
+                {
+                    RegionName = regionTemplate.RegionName,
+                    RegionCode = regionTemplate.RegionCode,
+                    Year = year,
+                    Gender = genderTemplate.Gender,
+                    Amount = amount,
+                    FetchedAt = value.FetchedAt,
+                };
+
+                newListOfBornStatistics.Add(newStatisticData);
+            }
+            
+            await _ctx.BornStatistics.AddRangeAsync(newListOfBornStatistics);
+            await _ctx.SaveChangesAsync();
         }
     }
 }
