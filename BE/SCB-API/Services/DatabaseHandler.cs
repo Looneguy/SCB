@@ -4,15 +4,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SCB_API.Services
 {
-    public class Database
+    public class DatabaseHandler
     {
         private readonly SCBDbContext _ctx;
 
-        public Database(SCBDbContext ctx)
+        public DatabaseHandler(SCBDbContext ctx)
         {
             _ctx = ctx;
         }
 
+        /// <summary>
+        /// Gets the "template" from SCB, which regioncode corresponds to which regionname,
+        /// which gendercode to which gender and puts it into DB.
+        /// </summary>
+        /// <param name="template"></param>
+        /// <returns></returns>
         public async Task FillDbWithRegionAndGenderTemplateAsync(SCBTemplateDTO template)
         {
             foreach (var section in template.Variables)
@@ -47,7 +53,10 @@ namespace SCB_API.Services
                 }
             }
         }
-
+        /// <summary>
+        /// Seed datanase with testdata
+        /// </summary>
+        /// <returns></returns>
         public async Task<bool> SeedAsync()
         {
             var bornStatistic = new BornStatistic()
@@ -75,6 +84,10 @@ namespace SCB_API.Services
             return true;
         }
 
+        /// <summary>
+        /// Recreates the database and seeds it with testdata.
+        /// </summary>
+        /// <returns></returns>
         public async Task RecreateAndSeedAsync()
         {
             await _ctx.Database.EnsureDeletedAsync();
@@ -82,6 +95,10 @@ namespace SCB_API.Services
             await SeedAsync();
         }
 
+        /// <summary>
+        /// Recreates the database.
+        /// </summary>
+        /// <returns>True if database is created</returns>
         public async Task<bool> Recreate()
         {
             await _ctx.Database.EnsureDeletedAsync();
@@ -89,21 +106,36 @@ namespace SCB_API.Services
             return isCreated;
         }
 
+        /// <summary>
+        /// Creates database if no one exists already.
+        /// </summary>
+        /// <returns></returns>
         public async Task<bool> CreateIfNotExist()
         {
             var isCreated = await _ctx.Database.EnsureCreatedAsync();
             return isCreated;
         }
 
-        public async Task CreateAndSeedIfNotExist()
+        /// <summary>
+        /// Creates data base if it does not exists, then seeds database with testdata
+        /// </summary>
+        /// <returns>True if database is created</returns>
+        public async Task<bool> CreateAndSeedIfNotExist()
         {
             bool didCreateDatabase = await _ctx.Database.EnsureCreatedAsync();
             if (didCreateDatabase)
             {
                 await SeedAsync();
             }
+            return didCreateDatabase;
         }
 
+        /// <summary>
+        /// Fills table "BornStatistics" with live births by region, gender, year and amount. 
+        /// The method gets which region name and gender it is from the other table called ScbModels.
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
         public async Task FillDbWithBornStatistics(BornStatisticDto values)
         {
             var newListOfBornStatistics = new List<BornStatistic>();

@@ -4,6 +4,10 @@ namespace SCB_API.Models.ResponseModels
 {
     public class SCBResponse<T>
     {
+        public SCBResponse()
+        {
+        }
+
         public SCBResponse(T? value)
         {
             Value = value;

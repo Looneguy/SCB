@@ -1,4 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure.Core.GeoJson;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
+using SCB_API.Models;
+using SCB_API.Models.RequestModels;
+using SCB_API.Models.ResponseModels;
+using SCB_API.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,36 +14,58 @@ namespace SCB_API.Controllers
     [ApiController]
     public class SCBController : ControllerBase
     {
-        // GET: api/<SCBController>
+        private readonly SCBHandler _scbHandler;
+
+        public SCBController(SCBHandler scbHandler) 
+        {
+            _scbHandler = scbHandler;
+        }
+        
         [HttpGet]
-        public IEnumerable<string> Get()
+        [Route("/born-statistics")]
+        public IActionResult GetStatistics([FromQuery] BornRequestDTO bornRequestDto)
         {
-            return new string[] { "value1", "value2" };
-        }
+            // TODO Split into years/gender since its a to big of a fetch
+            // TODO put stats in proper response model
 
-        // GET api/<SCBController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
+            string region = bornRequestDto.Region;
+            string year = bornRequestDto.Year;
+            string gender = bornRequestDto.Gender;
 
-        // POST api/<SCBController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
+            var response = new SCBResponse<List<BornStatistic>>();
 
-        // PUT api/<SCBController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<SCBController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            if(gender != null && year != null)
+            {
+                response = _scbHandler.GetBornStatistic(region, year, gender);
+                if (response.Success)
+                {
+                    return Ok(response);
+                }
+                return NotFound(response);
+            }
+            else if (gender == null && year != null)
+            {
+                response = _scbHandler.GetBornStatistic(region, year);
+                if (response.Success)
+                {
+                    return Ok(response);
+                }
+                return NotFound(response);
+            }
+            else if(gender != null && year == null)
+            {
+                response.ErrorMessage = "No value for 'Year' was provided.";
+                return BadRequest(response);
+            }
+            else
+            {
+                response = _scbHandler.GetBornStatistic(region);
+                if (response.Success)
+                {
+                    return Ok(response);
+                }
+                return NotFound(response);
+            }
         }
     }
 }
