@@ -1,31 +1,38 @@
 import React from "react";
 import { FC } from "react";
 import "./Filter.style.scss";
-import { IFilter } from "../routes/Statistics";
-import { Field, Form, Formik, FormikHelpers, FormikProvider, useFormik } from "formik";
+import { IFilter } from "../hooks/useGlobalContext";
+import { Field, FormikProvider, useFormik } from "formik";
+import { useGlobalContext } from "../hooks/useGlobalContext";
 
 export const Filter: FC = () => {
+  const { filter, setFilter } = useGlobalContext();
 
-    
-    const add2 = (values: any) => console.log(values)
+//   const filterValue: IFilter = {
+//     region: filter.region,
+//     year: filter.year,
+//     gender: filter.gender,
+//   };
 
-    const formik = useFormik({
-        initialValues: {
-            region: '',
-            year: '',
-            gender: '',
-        },
-        onSubmit: add2
-    })
+  const updateFilter = (values: IFilter) => {
+    setFilter(values);
+  };
+
+  const formik = useFormik({
+    initialValues: {region: filter.region, year: filter.year, gender: filter.gender},
+    onSubmit: updateFilter,
+  });
 
   return (
     <div>
-      <h1>Filter</h1>
+      <h2>Filter</h2>
       <FormikProvider value={formik}>
-        <Field name="region"></Field>
-        <Field name="year"></Field>
-        <Field name="gender"></Field>
-        <button type="submit" onClick={() => formik.handleSubmit()}>Add filter</button>
+        <Field name="region" placeholder="Region"></Field>
+        <Field name="year" placeholder="Year"></Field>
+        <Field name="gender" placeholder="Gender"></Field>
+        <button type="submit" onClick={() => formik.handleSubmit()}>
+          Apply filter
+        </button>
       </FormikProvider>
     </div>
   );

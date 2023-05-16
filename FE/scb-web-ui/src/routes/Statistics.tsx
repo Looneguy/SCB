@@ -1,9 +1,9 @@
-
-import React from "react";
-import { FC, useCallback, useEffect, useState } from "react";
+import React, { useContext } from "react";
+import { FC, useCallback, useEffect, useState, createContext } from "react";
 import Table from "react-bootstrap/Table";
 import axios from "axios";
 import { Filter } from "../components/Filter";
+import { IFilter, MyGlobalContext } from "../hooks/useGlobalContext";
 
 interface SCBResponse {
   success: Boolean;
@@ -20,7 +20,8 @@ interface BornStatistic {
   gender: string;
   amount: string;
 }
-export interface StatisticProp {
+
+interface StatisticProp {
   id: string;
   region: string;
   year: string;
@@ -28,24 +29,40 @@ export interface StatisticProp {
   amount: string;
 }
 
-export interface IFilter {
-  region: string;
-  year?: string;
-  gender?: string;
-}
+// export interface IFilter {
+//   region: string;
+//   year?: string;
+//   gender?: string;
+// }
+
+// export interface GlobalFilter extends IFilter {
+//     setFilter:(filter: IFilter) => void
+// }
+
+// export const MyGlobalContext = createContext<GlobalFilter>({
+//     region: '',
+//     year: '',
+//     gender: '',
+//     setFilter: () => {},
+// })
+
+// export const useGlobalContext = () => useContext(MyGlobalContext);
 
 const url: string = "https://localhost:7091/born-statistics";
 
 export const Statistics: FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
+
   const [statistics, setStatistics] = useState<StatisticProp[]>([]);
   const [filter, setFilter] = useState<IFilter>({
     region: "Sweden",
+    year: "",
+    gender: "",
   });
 
   const fetchStatistics = useCallback(async () => {
-    try{
-        await axios
+    try {
+      await axios
         .get<SCBResponse>(
           `${url}?Region=${filter.region}&Year=${filter.year}&Gender=${filter.gender}`
         )
@@ -54,11 +71,11 @@ export const Statistics: FC = () => {
           const data = response.data.value;
           const success = response.data.success;
           const errorMessage = response.data.errorMessage;
-  
+
           if (success) {
             setStatistics([]);
             let newStatistics: StatisticProp[] = [];
-  
+
             newStatistics = data
               ? data.map((val) => ({
                   id: val.id,
@@ -68,32 +85,28 @@ export const Statistics: FC = () => {
                   amount: val.amount,
                 }))
               : [];
-  
+
             setStatistics(newStatistics);
           }
         });
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(error.response?.data);
+      } else {
+        console.error(error);
+      }
     }
-    catch(error){
-        if(axios.isAxiosError(error)){
-            console.error(error.response?.data);
-        }
-        else{
-            console.error(error);
-        }
-    }
-  }, []);
+  }, [filter]);
 
   useEffect(() => {
-    fetchStatistics();
-  }, []);
-
-  useEffect(() => {
+    console.log("new filter? - ", filter);
+    setFilter(filter);
     fetchStatistics();
   }, [filter]);
 
   return (
-    <>
-    <Filter/>
+    <MyGlobalContext.Provider value={{ filter, setFilter }}>
+      <Filter />
       <Table striped bordered hover size="sm">
         <thead>
           <tr>
@@ -116,6 +129,6 @@ export const Statistics: FC = () => {
           })}
         </tbody>
       </Table>
-    </>
+    </MyGlobalContext.Provider>
   );
 };
