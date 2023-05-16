@@ -1,34 +1,66 @@
-import { useState } from 'react'
-import viteLogo from '/vite.svg'
-import './App.scss'
+import React from "react";
+import { useState } from "react";
+import "./App.scss";
+import { Link, Outlet, NavLink } from "react-router-dom";
+import Container from "react-bootstrap/Container";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
+
+export const loader = async () => {
+  // const contacts: any = await getContacts();
+  // return { contacts };
+};
 
 function App() {
-  const [count, setCount] = useState(10)
+  const [count, setCount] = useState(0);
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        {/* <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a> */}
+      <Navbar expand="lg" className="nav-bar">
+        <Container>
+          <Navbar.Brand>
+            <NavLink
+              to={"/info"}
+              className={({ isActive }) =>
+                isActive ? "nav-brand" : "nav-brand"
+              }
+            >
+              Scb Project
+            </NavLink>
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto">
+              <Nav.Link>
+                <NavLink
+                  to={"/info"}
+                  className={({ isActive }) =>
+                    isActive ? "active" : "nav-item"
+                  }
+                >
+                  Home
+                </NavLink>
+              </Nav.Link>
+              <Nav.Link>
+                <NavLink
+                  to={`/statistics`}
+                  className={({ isActive }) =>
+                    isActive ? "active" : "nav-item"
+                  }
+                >
+                  Statistics
+                </NavLink>
+              </Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+      <div id="main-container">
+        <Outlet />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
