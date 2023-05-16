@@ -5,6 +5,7 @@ using SCB_API.Models;
 using SCB_API.Models.RequestModels;
 using SCB_API.Models.ResponseModels;
 using SCB_API.Services;
+using SCB_API.Tools.Helpers;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,16 +26,15 @@ namespace SCB_API.Controllers
         [Route("/born-statistics")]
         public IActionResult GetStatistics([FromQuery] BornRequestDTO bornRequestDto)
         {
-            // TODO Split into years/gender since its a to big of a fetch
-            // TODO put stats in proper response model
+            var check = new Checkers();
 
             string region = bornRequestDto.Region;
-            string year = bornRequestDto.Year;
-            string gender = bornRequestDto.Gender;
+            string? year = bornRequestDto.Year;
+            string? gender = bornRequestDto.Gender;
 
             var response = new SCBResponse<List<BornStatistic>>();
 
-            if(gender != null && year != null)
+            if(!check.IsNullOrUndefined(gender) && !check.IsNullOrUndefined(year))
             {
                 response = _scbHandler.GetBornStatistic(region, year, gender);
                 if (response.Success)
@@ -43,7 +43,7 @@ namespace SCB_API.Controllers
                 }
                 return NotFound(response);
             }
-            else if (gender == null && year != null)
+            else if (check.IsNullOrUndefined(gender) && !check.IsNullOrUndefined(year))
             {
                 response = _scbHandler.GetBornStatistic(region, year);
                 if (response.Success)
@@ -52,7 +52,7 @@ namespace SCB_API.Controllers
                 }
                 return NotFound(response);
             }
-            else if(gender != null && year == null)
+            else if(!check.IsNullOrUndefined(gender) && check.IsNullOrUndefined(year))
             {
                 response.ErrorMessage = "No value for 'Year' was provided.";
                 return BadRequest(response);
