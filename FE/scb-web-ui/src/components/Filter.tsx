@@ -59,6 +59,7 @@ export const Filter: FC = () => {
             className="form-control form-control-sm field"
             placeholder="Gender (Women, Men)"
           >
+            <option value="">No gender</option>
             <option value="Women">Women</option>
             <option value="Men">Men</option>
           </Field>
