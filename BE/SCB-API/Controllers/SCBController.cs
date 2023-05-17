@@ -67,5 +67,22 @@ namespace SCB_API.Controllers
                 return NotFound(response);
             }
         }
+
+        [HttpGet]
+        [Route("/regions")]
+        public IActionResult GetRegions()
+        {
+            var response = new SCBResponse<List<string>>();
+
+            response = _scbHandler.GetRegions();
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return NotFound(response);
+            }
+        }
     }
 }

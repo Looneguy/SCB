@@ -177,6 +177,25 @@ namespace SCB_API.Services
             return new SCBResponse<List<BornStatistic>>(errorMessage);
         }
 
+        public SCBResponse<List<string>> GetRegions()
+        {
+            var templateList = _ctx.ScbModels.Where(m => m.RegionName != null).ToList();
+
+            List<string> regions = new List<string>();
+            if(templateList.Count != 0)
+            {
+                foreach (var template in templateList)
+                {
+                    regions.Add(template.RegionName);
+                }
+
+                return new SCBResponse<List<string>>(regions);
+            }
+
+            string errorMessage = "No regions where found in database";
+            return new SCBResponse<List<string>>(errorMessage);
+        }
+
         /// <summary>
         /// Creates a request-body according to SCB's Api - 
         /// (<paramref name="responseFormat"/>) Accepted response-types are "px","csv", "json", "xlsx", "json-stat", "json-stat2", "sdmx" 
