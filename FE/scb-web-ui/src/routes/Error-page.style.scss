@@ -1,0 +1,11 @@
+@import "../styles/fonts";
+@import "../styles/variables";
+@import "../styles/mixins";
+
+#error-page{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin-top: $margin-large;
+}

@@ -1,5 +1,6 @@
 import React from "react";
 import { useRouteError, isRouteErrorResponse } from "react-router-dom";
+import "./Error-page.style.scss"
 
 const ErrorPage: React.FC = () => {
   const error = useRouteError();
@@ -14,7 +15,7 @@ const ErrorPage: React.FC = () => {
         <i>
           {isRouteErrorResponse(error)
             ? error.error?.message || error.statusText
-            : "Unkown error message"}
+            : "Unknown error message"}
         </i>
       </p>
     </div>

@@ -1,0 +1,41 @@
+@import "../styles/fonts";
+@import "../styles/variables";
+@import "../styles/mixins";
+
+$primary: #11998e;
+$secondary: #38ef7d;
+$white: #fff;
+$gray: #9b9b9b;
+
+.filter-container{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    margin: $margin-medium 0 ;
+}
+
+
+
+.fields-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80%;
+
+    margin: 0 $margin-medium $margin-medium $margin-medium;
+
+    & .field:nth-child(2){
+        margin: 0 $margin-xsmall;
+    }
+}
+
+.field{
+    width: 250px;
+    
+}
+
+button{
+    background-color: red;
+}
+  

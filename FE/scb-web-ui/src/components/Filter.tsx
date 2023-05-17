@@ -1,38 +1,62 @@
 import React from "react";
 import { FC } from "react";
 import "./Filter.style.scss";
-import { IFilter } from "../hooks/useGlobalContext";
 import { Field, FormikProvider, useFormik } from "formik";
 import { useGlobalContext } from "../hooks/useGlobalContext";
+import Button from "react-bootstrap/esm/Button";
+import { IFilter } from "../interfaces/statistics";
 
 export const Filter: FC = () => {
-  const { filter, setFilter } = useGlobalContext();
+  const { setFilter } = useGlobalContext();
 
-//   const filterValue: IFilter = {
-//     region: filter.region,
-//     year: filter.year,
-//     gender: filter.gender,
-//   };
+    const filterValue: IFilter = {
+      region: "Sweden",
+      year: "",
+      gender: "",
+    };
 
   const updateFilter = (values: IFilter) => {
     setFilter(values);
   };
 
   const formik = useFormik({
-    initialValues: {region: filter.region, year: filter.year, gender: filter.gender},
+
+    enableReinitialize: true,
+    initialValues: filterValue,
     onSubmit: updateFilter,
   });
 
+  // Sätt gender field type till select
+  // sätt region till select
+  // sätt år tilll select???
   return (
-    <div>
-      <h2>Filter</h2>
+    <div className="filter-container">
+      <h2>SCB Filter</h2>
       <FormikProvider value={formik}>
-        <Field name="region" placeholder="Region"></Field>
-        <Field name="year" placeholder="Year"></Field>
-        <Field name="gender" placeholder="Gender"></Field>
-        <button type="submit" onClick={() => formik.handleSubmit()}>
+        <div className="fields-container">
+          <Field
+            name="region"
+            className="form-control form-control-sm field"
+            placeholder="Region"
+          ></Field>
+          <Field
+            name="year"
+            className="form-control form-control-sm field"
+            placeholder="Year (2016-2020)"
+          ></Field>
+          <Field
+            name="gender"
+            className="form-control form-control-sm field"
+            placeholder="Gender (Women, Men)"
+          ></Field>
+        </div>
+        <Button
+          variant="secondary"
+          type="submit"
+          onClick={() => formik.handleSubmit()}
+        >
           Apply filter
-        </button>
+        </Button>
       </FormikProvider>
     </div>
   );

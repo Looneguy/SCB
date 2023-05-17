@@ -1,0 +1,10 @@
+@import "../styles/fonts";
+@import "../styles/variables";
+@import "../styles/mixins";
+
+.loader-wrapper{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: $margin-xlarge;
+}

@@ -1,27 +1,18 @@
-import React from "react";
 import { useState } from "react";
 import "./App.scss";
-import { Link, Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import NavDropdown from "react-bootstrap/NavDropdown";
-
-export const loader = async () => {
-  // const contacts: any = await getContacts();
-  // return { contacts };
-};
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <>
       <Navbar expand="lg" className="nav-bar">
         <Container>
           <Navbar.Brand>
             <NavLink
-              to={"/info"}
+              to={"/"}
               className={({ isActive }) =>
                 isActive ? "nav-brand" : "nav-brand"
               }
@@ -39,7 +30,7 @@ function App() {
                     isActive ? "active" : "nav-item"
                   }
                 >
-                  Home
+                  Info
                 </NavLink>
               </Nav.Link>
               <Nav.Link>
