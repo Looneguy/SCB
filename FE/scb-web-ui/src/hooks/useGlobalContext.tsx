@@ -42,7 +42,6 @@ export const GlobalContextProvider: FC<GlobalContextProviderProps> = ({
   });
   const [regions, setRegions] = useState<string[]>([]);
   const [apiError, setApiError] = useState<string>("");
-
   const [statistics, setStatistics] = useState<StatisticProp[]>([]);
 
   const fetchStatistics = useCallback(async () => {

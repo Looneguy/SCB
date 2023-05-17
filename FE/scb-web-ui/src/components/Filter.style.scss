@@ -2,11 +2,6 @@
 @import "../styles/variables";
 @import "../styles/mixins";
 
-$primary: #11998e;
-$secondary: #38ef7d;
-$white: #fff;
-$gray: #9b9b9b;
-
 .filter-container{
     display: flex;
     align-items: center;
@@ -14,8 +9,6 @@ $gray: #9b9b9b;
 
     margin: $margin-medium 0 ;
 }
-
-
 
 .fields-container{
     display: flex;
@@ -32,7 +25,6 @@ $gray: #9b9b9b;
 
 .field{
     width: 250px;
-    
 }
 
 button{

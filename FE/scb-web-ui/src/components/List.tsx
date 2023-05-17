@@ -19,7 +19,7 @@ export const List: FC = () => {
         </thead>
         <tbody>
           {loading ? (
-            <div></div>
+            <></>
           ) : (
             statistics.map((statistic) => {
               return (

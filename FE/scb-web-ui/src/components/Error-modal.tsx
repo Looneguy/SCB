@@ -12,7 +12,6 @@ export const ErrorModal = () => {
   const handleShow = () => setShow(true);
 
   useEffect(() => {
-    console.log("ERROR!?", apiError)
     if(apiError != ""){
         handleShow();
     }
