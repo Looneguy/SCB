@@ -1,6 +1,7 @@
 ﻿using Azure.Core.GeoJson;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using SCB_API.Models;
 using SCB_API.Models.RequestModels;
 using SCB_API.Models.ResponseModels;
@@ -33,39 +34,12 @@ namespace SCB_API.Controllers
             string? gender = bornRequestDto.Gender;
 
             var response = new SCBResponse<List<BornStatistic>>();
-
-            if(!check.IsNullOrUndefined(gender) && !check.IsNullOrUndefined(year))
+            response = _scbHandler.GetBornStatistic(region, year, gender);
+            if (response.Success)
             {
-                response = _scbHandler.GetBornStatistic(region, year, gender);
-                if (response.Success)
-                {
-                    return Ok(response);
-                }
-                return NotFound(response);
+                return Ok(response);
             }
-            else if (check.IsNullOrUndefined(gender) && !check.IsNullOrUndefined(year))
-            {
-                response = _scbHandler.GetBornStatistic(region, year);
-                if (response.Success)
-                {
-                    return Ok(response);
-                }
-                return NotFound(response);
-            }
-            else if(!check.IsNullOrUndefined(gender) && check.IsNullOrUndefined(year))
-            {
-                response.ErrorMessage = "No value for 'Year' was provided.";
-                return BadRequest(response);
-            }
-            else
-            {
-                response = _scbHandler.GetBornStatistic(region);
-                if (response.Success)
-                {
-                    return Ok(response);
-                }
-                return NotFound(response);
-            }
+            return NotFound(response);
         }
 
         [HttpGet]
