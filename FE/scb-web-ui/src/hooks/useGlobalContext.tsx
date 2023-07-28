@@ -87,7 +87,7 @@ export const GlobalContextProvider: FC<GlobalContextProviderProps> = ({
   useEffect(() => {
     setFilter(filter);
     fetchStatistics();
-  }, [filter]);
+  }, [filter.region, filter.gender, filter.year]);
 
   useEffect(() => {
     const fetchRegions = async () => {
